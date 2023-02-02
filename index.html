@@ -9,11 +9,22 @@
   </head>
 
   <body>
+    <input id="live-search" placeholder="search episode">
+    <label for="episode-selection">Choose an episode:</label>
+    
+    <select id="episode-list" id="episode-select">
+    </select>
+    <div class="result"></div>
+
+    <div id ="episode-counter">
+    </div>
+
     <div id="root">
     </div>
 
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
     <script src="episodes.js"></script>
+    <footer>Data originally comes from <a href="https://tvmaze.com/"> TV Maze!</a></footer>
 
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>

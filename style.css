@@ -1,3 +1,5 @@
-#root {
-  color: red;
+#root{
+  color: blue;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
 }
