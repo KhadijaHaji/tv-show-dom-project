@@ -1,16 +1,18 @@
 //You can edit ALL of the code here
+const allEpisodes = getAllEpisodes();
+const rootElem = document.getElementById("root");
+
 function setup() {
-  const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
   searchItem();
+  selectItem(allEpisodes);
 }
 
 function makePageForEpisodes(episodeList) {
-  const rootElem = document.getElementById("root");
   rootElem.innerHTML = "";
+
   const episodeCount = document.getElementById("episode-counter");
-  episodeCount.textContent = `Got ${episodeList.length} episode(s)`;;
-  
+  episodeCount.textContent = `Showing ${episodeList.length} episode(s)`;
 
   //episode list
   for (const episode of episodeList) {
@@ -51,10 +53,11 @@ function makePageForEpisodes(episodeList) {
 
 //level 200
 function searchItem() {
-  const allEpisodes = getAllEpisodes();
+  // const allEpisodes = getAllEpisodes();
   const liveSearch = document.getElementById("live-search");
   liveSearch.addEventListener("keyup", (event) => {
     const keyValues = event.target.value.toLowerCase();
+    console.log(keyValues);
     const episodeFilter = allEpisodes.filter((searchedEpisodes) => {
       return (
         searchedEpisodes.name.toLowerCase().includes(keyValues) ||
@@ -67,19 +70,36 @@ function searchItem() {
 
 //level 300
 
+function selectItem(episodeList) {
+  const episodSelect = document.getElementById("episode-list");
 
+  for (let episode of episodeList) {
+    const episodeOption = document.createElement("option");
+    episodeOption.innerText = `S${String(episode.season).padStart(
+      2,
+      "0"
+    )}E${String(episode.number).padStart(2, "0")} ${episode.name}`;
 
-function selectItem() {
-  const allEpisodes = getAllEpisodes();
-  const episodeSelect = document.getElementById("episode-list");
-  episodeSelect.addEventListener("change", (event) => {
-    
-    const episodeForEach = allEpisodes.forEach((forepisodes) => {
-      return forepisodes.name;
-    });
-    makePageForEpisodes(episodeForEach);
+    episodSelect.appendChild(episodeOption);
+  }
+
+  episodSelect.addEventListener("change", (event) => {
+    const keyValues = event.target.value;
+
+    const myTitle = keyValues.slice(7);
+    rootElem.innerHTML = "";
+
+    if (keyValues === "Show All Episodes") {
+      makePageForEpisodes(allEpisodes);
+    } else {
+      const episodeFilter = episodeList.filter((searchedEpisodes) => {
+        return searchedEpisodes.name.includes(myTitle);
+      });
+      makePageForEpisodes(episodeFilter);
+    }
   });
 }
+
 
 
 window.onload = setup;
