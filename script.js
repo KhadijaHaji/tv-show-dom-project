@@ -1,11 +1,12 @@
 //You can edit ALL of the code here
-const allEpisodes = getAllEpisodes();
+// const allEpisodes = getAllEpisodes();
 const rootElem = document.getElementById("root");
 
-function setup() {
-  makePageForEpisodes(allEpisodes);
-  searchItem();
-  selectItem(allEpisodes);
+async function setup() {
+ const fetchEpisodeResult = await fetchEpisodeData();
+  makePageForEpisodes(fetchEpisodeResult);
+  searchItem(fetchEpisodeResult);
+  selectItem(fetchEpisodeResult);
 }
 
 function makePageForEpisodes(episodeList) {
@@ -52,13 +53,12 @@ function makePageForEpisodes(episodeList) {
 }
 
 //level 200
-function searchItem() {
-  // const allEpisodes = getAllEpisodes();
+function searchItem(episodeList) {
   const liveSearch = document.getElementById("live-search");
   liveSearch.addEventListener("keyup", (event) => {
     const keyValues = event.target.value.toLowerCase();
     console.log(keyValues);
-    const episodeFilter = allEpisodes.filter((searchedEpisodes) => {
+    const episodeFilter = episodeList.filter((searchedEpisodes) => {
       return (
         searchedEpisodes.name.toLowerCase().includes(keyValues) ||
         searchedEpisodes.summary.toLowerCase().includes(keyValues)
@@ -87,10 +87,11 @@ function selectItem(episodeList) {
     const keyValues = event.target.value;
 
     const myTitle = keyValues.slice(7);
+    console.log(myTitle);
     rootElem.innerHTML = "";
 
     if (keyValues === "Show All Episodes") {
-      makePageForEpisodes(allEpisodes);
+      makePageForEpisodes(episodeList);
     } else {
       const episodeFilter = episodeList.filter((searchedEpisodes) => {
         return searchedEpisodes.name.includes(myTitle);
@@ -98,6 +99,15 @@ function selectItem(episodeList) {
       makePageForEpisodes(episodeFilter);
     }
   });
+}
+
+const fetchEpisodeData = async() =>
+{
+
+const response = await fetch("https://api.tvmaze.com/shows/82/episodes");
+const data = await response.json();
+return data;
+
 }
 
 
