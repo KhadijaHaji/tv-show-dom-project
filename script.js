@@ -4,9 +4,12 @@ const rootElem = document.getElementById("root");
 
 async function setup() {
  const fetchEpisodeResult = await fetchEpisodeData();
-  makePageForEpisodes(fetchEpisodeResult);
-  searchItem(fetchEpisodeResult);
-  selectItem(fetchEpisodeResult);
+ const fetchshowsResult = await fetchShowData();
+ console.log(fetchshowsResult);
+ selectShows(fetchshowsResult);
+  makePageForEpisodes(fetchshowsResult);
+  searchItem(fetchshowsResult);
+  selectItem(fetchshowsResult);
 }
 
 function makePageForEpisodes(episodeList) {
@@ -49,10 +52,27 @@ function makePageForEpisodes(episodeList) {
     const episodeSummaryDiv = document.createElement("div");
     episodeSummaryDiv.innerHTML = episodeSummary;
     section.appendChild(episodeSummaryDiv);
+
+    //rating
+    const episodeRating = episode.rating.average;
+    const episodeRatingDiv = document.createElement("p");
+    episodeRatingDiv.innerHTML = `Rating: ${episodeRating}`;
+    section.appendChild(episodeRatingDiv);
+
+    //genres
+    const episodeGenre = episode.genres;
+    const episodeGenresDiv = document.createElement("p");
+    episodeGenresDiv.innerHTML = `Genres: ${episodeGenre}`;
+    //  episodeGenresDiv.innerHTML = `Genres: ${episodeGenre.replace(/,/g, ", ")}`;
+    section.appendChild(episodeGenresDiv);
+
+    //status
+
+    //runtimw
   }
 }
 
-//level 200
+//level 200 - search input
 function searchItem(episodeList) {
   const liveSearch = document.getElementById("live-search");
   liveSearch.addEventListener("keyup", (event) => {
@@ -68,7 +88,7 @@ function searchItem(episodeList) {
   });
 }
 
-//level 300
+//level 300 - select episodes
 
 function selectItem(episodeList) {
   const episodSelect = document.getElementById("episode-list");
@@ -79,7 +99,7 @@ function selectItem(episodeList) {
       2,
       "0"
     )}E${String(episode.number).padStart(2, "0")} ${episode.name}`;
-
+console.log(episode)
     episodSelect.appendChild(episodeOption);
   }
 
@@ -102,7 +122,7 @@ function selectItem(episodeList) {
 }
 
 
-//level 350
+//level 350 fetch episodes
 const fetchEpisodeData = async() =>
 {
 
@@ -112,6 +132,42 @@ return data;
 
 }
 
+//400 - fetch shows
+const fetchShowData = async () => {
+  
+  const response = await fetch("https://api.tvmaze.com/shows");
+  const data = await response.json();
+  return data;
+};
 
+
+//select shows
+function selectShows(showList) {
+  const showSelect = document.getElementById("show-list");
+
+  for (let show of showList) {
+    const showOption = document.createElement("option");
+    showOption.innerText = show.name;
+
+    showSelect.appendChild(showOption);
+  }
+
+  showSelect.addEventListener("change", (event) => {
+    const keyValues = event.target.value;
+
+    // const myTitle = keyValues.slice(7);
+    // console.log(myTitle);
+    rootElem.innerHTML = "";
+
+    if (keyValues === "Show All Episodes") {
+      makePageForEpisodes(episodeList);
+    } else {
+      const episodeFilter = showList.filter((searchedShows) => {
+        return searchedShows.name.includes(keyValues);
+      });
+      makePageForEpisodes(episodeFilter);
+    }
+  });
+}
 
 window.onload = setup;
