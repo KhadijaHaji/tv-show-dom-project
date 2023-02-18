@@ -3,10 +3,10 @@
 const rootElem = document.getElementById("root");
 
 async function setup() {
- const fetchEpisodeResult = await fetchEpisodeData();
+//  const fetchEpisodeResult = await fetchEpisodeData();
  const fetchshowsResult = await fetchShowData();
- console.log(fetchshowsResult);
- selectShows(fetchshowsResult);
+//  console.log(fetchshowsResult);
+  selectShows(fetchshowsResult);
   makePageForEpisodes(fetchshowsResult);
   searchItem(fetchshowsResult);
   selectItem(fetchshowsResult);
@@ -23,15 +23,12 @@ function makePageForEpisodes(episodeList) {
     const section = document.createElement("section");
     rootElem.appendChild(section);
 
-    const nameOfEpisode = episode.name;
-    const nameDiv = document.createElement("div");
-    nameDiv.textContent = nameOfEpisode;
-    section.appendChild(nameDiv);
+
 
     //season number and episode number
     const nameOfSeason = episode.season;
     const episodeNumber = episode.number;
-    const episodeCodeDiv = document.createElement("div");
+    const episodeCodeDiv = document.createElement("p");
 
     if (episodeNumber < 10) {
       episodeCodeDiv.textContent = `S0${nameOfSeason}E0${episodeNumber}`;
@@ -46,6 +43,13 @@ function makePageForEpisodes(episodeList) {
     const episodeMediumImageDiv = document.createElement("img");
     episodeMediumImageDiv.src = episodeMediumImage;
     section.appendChild(episodeMediumImageDiv);
+
+    //title
+    const nameOfEpisode = episode.name;
+    const nameDiv = document.createElement("h1");
+    nameDiv.textContent = nameOfEpisode;
+    nameDiv.classList.add('card-title')
+    section.appendChild(nameDiv);
 
     //summary
     const episodeSummary = episode.summary;
@@ -123,10 +127,10 @@ console.log(episode)
 
 
 //level 350 fetch episodes
-const fetchEpisodeData = async() =>
+const fetchEpisodeData = async(showId) =>
 {
 
-const response = await fetch("https://api.tvmaze.com/shows/82/episodes");
+const response = await fetch(`https://api.tvmaze.com/shows/${showId}/episodes`);
 const data = await response.json();
 return data;
 
@@ -149,23 +153,21 @@ function selectShows(showList) {
     const showOption = document.createElement("option");
     showOption.innerText = show.name;
 
+    showOption.setAttribute('value', `${show.id}`)
+
     showSelect.appendChild(showOption);
   }
 
-  showSelect.addEventListener("change", (event) => {
+  showSelect.addEventListener("change", async(event) => {
     const keyValues = event.target.value;
-
-    // const myTitle = keyValues.slice(7);
-    // console.log(myTitle);
     rootElem.innerHTML = "";
 
-    if (keyValues === "Show All Episodes") {
-      makePageForEpisodes(episodeList);
+    if (keyValues === "all shows") {
+      const fetchshowsResult = await fetchShowData();
+      makePageForEpisodes(fetchshowsResult);
     } else {
-      const episodeFilter = showList.filter((searchedShows) => {
-        return searchedShows.name.includes(keyValues);
-      });
-      makePageForEpisodes(episodeFilter);
+      const episodes = await fetchEpisodeData(keyValues);
+      makePageForEpisodes(episodes);
     }
   });
 }
